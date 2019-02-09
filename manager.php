@@ -100,6 +100,7 @@ if (isset($argv[1])) {
 						print_r("No member is set. Corporation does not synchronized.\n");
 					} else {
 						$sync->corp_groups();
+						$sync->ali_groups();
 					}
 					$sync->server_groups();
 					unset($db_client, $sync);
@@ -121,11 +122,15 @@ if (isset($argv[1])) {
 				case 'sync':
 					$sync = new SyncManager();
 					$sync->corp_groups();
+					$sync->ali_groups();
 					$sync->server_groups();
 					$sync->user_groups();
 					unset($db_client, $sync);
 					break;
-
+				case 'sync-user':
+					$sync = new SyncManager();
+					$sync->user_groups();
+					break;
 				default:
 					die("Unknown command.\n");
 					break;

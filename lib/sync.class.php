@@ -63,7 +63,9 @@ class SyncManager {
 				$this->discord->role_add($group['name'], $group['color'], $group['discord_hoist']);
 			} else {
 				$this->discord->role_check_hoist($group['name'], $group['discord_hoist']);
-				$this->discord->role_check_color($group['name'], $group['color']);
+				if (!$this->config['auth']['ignore_colors']) {
+					$this->discord->role_check_color($group['name'], $group['color']);
+				}
 			}
 		} else {
 			foreach ($roles as $role) {
@@ -239,9 +241,13 @@ class SyncManager {
 		}
 	}
 
-	function corp_groups() {
+	function corp_groups($current_alliance_id = 0) {
 		$config = $this->config['auth'];
-		$alliance_id = $this->db->custom_get("member_id");
+		if ($current_alliance_id == 0) {
+			$alliance_id = $this->db->custom_get("member_id");
+		} else {
+			$alliance_id = $current_alliance_id;
+		}
 		$corporations = $this->db->corporation_info_get_alliance($alliance_id);
 
 		foreach ($corporations as $corporation) {
@@ -253,6 +259,26 @@ class SyncManager {
 					$this->db->groups_service_enable($group_name);
 					$this->db->groups_update($group_name, 1, $config['corp_color'], $config['corp_hoist']);
 				}
+			} else {
+				$this->db->groups_service_disable($group_name);
+			}
+		}
+	}
+
+	function ali_groups() {
+		$config = $this->config['auth'];
+		$alliances = $this->db->alliance_info_getall();
+
+		foreach ($alliances as $alliance) {
+			$group_name = ali_group_name($alliance['ticker']);
+			if ($config['set_ali_role']) {
+				if ($this->db->groups_getby_name($group_name) == null) {
+					$this->db->authgroups_add($group_name, 1, $config['corp_color'], $config['ali_hoist']);
+				} else {
+					$this->db->groups_service_enable($group_name);
+					$this->db->groups_update($group_name, 1, $config['corp_color'], $config['ali_hoist']);
+				}
+				$this->corp_groups($alliance["id"]);
 			} else {
 				$this->db->groups_service_disable($group_name);
 			}

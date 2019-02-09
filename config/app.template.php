@@ -36,5 +36,9 @@ return [
 		'set_corp_role' => true,
 		'set_corp_ticker' => true,
 		'set_name_enforce' => true,
+		'prefer_ali_ticker' => false,
+		'set_ali_role' => true,
+		'ali_hoist' => true,
+		'ignore_colors' => true
 	],
 ];

@@ -36,6 +36,11 @@ function corp_group_name($ticker) {
 	return $name;
 }
 
+function ali_group_name($ticker) {
+	$name = $ticker." Alliance";
+	return $name;
+}
+
 function nick_formate($ticker, $name) {
 	$name = $ticker." ".$name;
 	return $name;

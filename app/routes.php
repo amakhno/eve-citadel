@@ -500,8 +500,12 @@ $app->get('/discord/callback', function (Request $request, Response $response) u
 
 			if ($config_app['auth']['set_name_enforce']) {
 				$discord_nick = $_SESSION['character_info']['name'];
-				if ($config_app['auth']['set_corp_ticker']) {
-					$discord_nick = "[".$_SESSION['corporation_info']['ticker']."] ".$discord_nick;
+				if ($config_app['auth']['set_corp_ticker']) {	
+					if ($config_app['auth']['prefer_ali_ticker']) {
+						$discord_nick = "[".$_SESSION['alliance_info']['ticker']."] ".$discord_nick;
+					} else {
+						$discord_nick = "[".$_SESSION['corporation_info']['ticker']."] ".$discord_nick;
+					}
 				}
 			}
 

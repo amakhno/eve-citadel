@@ -48,24 +48,37 @@ foreach(array_chunk($users, 5, true) as $users_chunk) {
 		$character_cache = $db_client->character_info_get($character_id);
 		$alliance_esi_id = $character_esi['alliance_id'];
 		$alliance_cached_id = $character_cache['alliance_id'];
+		$corp_cached_id = $character_cache['corporation_id'];
 		$corp_esi_id = $character_esi['corporation_id'];
 		$corporation_esi = $esi_client->corporation_get_details($corp_esi_id);
-		$corp_cached_id = $character_cache['corporation_id'];
-		$corporation_cache = $db_client->corporation_info_get($corp_cached_id);
+		$corporation_cache = $db_client->corporation_info_get($corp_cached_id);		
+		$alliance_esi = $esi_client->alliance_get_details($alliance_esi_id);
+		$alliance_cache = $db_client->alliance_info_get($alliance_cached_id);
+
 		$group_new_name = corp_group_name($corporation_esi['ticker']);
 		$group_old_name = corp_group_name($corporation_cache['ticker']);
+		$group_new_name_ali = ali_group_name($alliance_esi['ticker']);
+		$group_old_name_ali = ali_group_name($alliance_cache['ticker']);
 
 		$group_new = $db_client->groups_getby_name($group_new_name);
 		$group_old = $db_client->groups_getby_name($group_old_name);
+		$group_new_ali = $db_client->groups_getby_name($group_new_name_ali);
+		$group_old_ali = $db_client->groups_getby_name($group_old_name_ali);
 
 		if ($auth_manager->is_member($alliance_esi_id, $corp_esi_id)) {
 			$auth_manager->character_check_membership($character_id, $character_esi, $character_cache);
 			$auth_manager->auth_role_check($user['id'], true);
 			$auth_manager->corp_role_check($user['id'], $group_old, $group_new, true);
+			if ($config['auth']['set_ali_role']) {
+				$auth_manager->corp_role_check($user['id'], $group_old_ali, $group_new_ali, true);
+			}
 		} elseif ($auth_manager->is_blue($alliance_esi_id, $corp_esi_id)) {
 			$auth_manager->character_check_membership($character_id, $character_esi, $character_cache);
 			$auth_manager->auth_role_check($user['id'], false);
 			$auth_manager->corp_role_check($user['id'], $group_old, $group_new, false);
+			if ($config['auth']['set_ali_role']) {
+				$auth_manager->corp_role_check($user['id'], $group_old_ali, $group_new_ali, false);
+			}
 		} else {
 			print_r("[".date("Y-m-d H:i:s", time())."] Now user {$character_esi['name']} is not member or blue. Delete all roles.\n");
 
