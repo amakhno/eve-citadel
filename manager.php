@@ -11,6 +11,7 @@ require_once(__DIR__ . '/lib/sync.class.php');
 require_once(__DIR__ . '/lib/esi.class.php');
 require_once(__DIR__ . '/lib/phpbb3.class.php');
 require_once(__DIR__ . '/lib/discord.class.php');
+require_once(__DIR__ . '/lib/eveinfo.class.php');
 
 $config = require __DIR__ . '/config/app.php';
 
