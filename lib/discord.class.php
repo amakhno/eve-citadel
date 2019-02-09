@@ -22,7 +22,7 @@ class DiscordCitadelClient {
 	}
 
     function __destruct() {
-		unset($this);
+		//unset($this);
     }
 
 	function role_names() {
