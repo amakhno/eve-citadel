@@ -160,6 +160,54 @@ class citadelDB {
 		}
 	}
 
+	// callback_pendings
+	function callback_pending_add($key, $action) {
+		$sql = "INSERT INTO `callback_pending` (pending_key, pending_action) VALUES ('$key', '$action');";
+		if ($this->db->query($sql) === TRUE) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	function callback_pending_get($key) {
+		$sql = "SELECT pending_action FROM `callback_pending` WHERE pending_key = '$key';";
+		$result = $this->db->query($sql)->fetch_assoc();
+		if (isset($result['pending_action'])) {
+			return $result['pending_action'];
+		} else {
+			return null;
+		}
+	}
+
+	function callback_pending_get_all() {
+		$sql = "SELECT * FROM `callback_pending`;";
+		$result = $this->db->query($sql)->fetch_all($resulttype=MYSQLI_ASSOC);
+		if (isset($result)) {
+			return $result;
+		} else {
+			return null;
+		}
+	}
+
+	function callback_pending_del($key) {
+		$sql = "DELETE FROM `callback_pending` WHERE pending_key = '$key';";
+		if ($this->db->query($sql) === TRUE) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	function callback_pending_increset() {
+		$sql = "ALTER TABLE `callback_pending` AUTO_INCREMENT = 1;";
+		if ($this->db->query($sql) === TRUE) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
 	// Functions for work with `citadel_session_keys`
 	function session_add($user_id, $session_key, $expire_date) {
 		$sql = "INSERT INTO `citadel_session_keys` (user_id, session_key, expire_date) VALUES ('$user_id', '$session_key', '$expire_date');";
@@ -380,9 +428,10 @@ class citadelDB {
 
 	function corporation_info_set_alliance($corporation_id, $alliance_id) {
 		if ($alliance_id == 1) {
-			$alliance_id = NULL;
+			$sql = "UPDATE `eve_corporation_info` SET alliance_id = NULL WHERE id = '$corporation_id';";
+		} else {
+			$sql = "UPDATE `eve_corporation_info` SET alliance_id = '$alliance_id' WHERE id = '$corporation_id';";
 		}
-		$sql = "UPDATE `eve_corporation_info` SET alliance_id = '$alliance_id' WHERE id = '$corporation_id';";
 		if ($this->db->query($sql) === TRUE) {
 			return null;
 		} else {
@@ -391,7 +440,7 @@ class citadelDB {
 	}
 
 	function corporation_info_unset_alliance($corporation_id) {
-		$sql = "UPDATE `eve_corporation_info` SET alliance_id = 'NULL' WHERE id = '$corporation_id';";
+		$sql = "UPDATE `eve_corporation_info` SET alliance_id = NULL WHERE id = '$corporation_id';";
 		if ($this->db->query($sql) === TRUE) {
 			return null;
 		} else {
@@ -430,6 +479,7 @@ class citadelDB {
 	}
 
 	function character_info_addfull($character_id, $name, $corporation_id, $alliance_id) {
+		$name = $this->db->real_escape_string($name);
 		$sql = "INSERT INTO `eve_character_info` (id, name, corporation_id, alliance_id) VALUES ('$character_id', '$name', '$corporation_id', '$alliance_id');";
 		if ($this->db->query($sql) === TRUE) {
 			return null;
@@ -468,7 +518,7 @@ class citadelDB {
 	}
 
 	function character_info_unset_corp($character_id) {
-		$sql = "UPDATE `eve_character_info` SET corporation_id = 'NULL' WHERE id = '$character_id';";
+		$sql = "UPDATE `eve_character_info` SET corporation_id = NULL WHERE id = '$character_id';";
 		if ($this->db->query($sql) === TRUE) {
 			return null;
 		} else {
@@ -486,7 +536,7 @@ class citadelDB {
 	}
 
 	function character_info_unset_alliance($character_id) {
-		$sql = "UPDATE `eve_character_info` SET alliance_id = 'NULL' WHERE id = '$character_id';";
+		$sql = "UPDATE `eve_character_info` SET alliance_id = NULL WHERE id = '$character_id';";
 		if ($this->db->query($sql) === TRUE) {
 			return null;
 		} else {
@@ -615,6 +665,43 @@ class citadelDB {
 
 	function discord_delete($user_id) {
 		$sql = "DELETE FROM `discord_users` WHERE user_id = '$user_id';";
+		if ($this->db->query($sql) === TRUE) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	function discord_member_exist($discord_id) {
+		$sql = "SELECT * FROM `discord_members` WHERE discord_id = '$discord_id';";
+		$result = $this->db->query($sql)->fetch_assoc();
+		if (isset($result['discord_username'])) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function discord_member_authorized_set($discord_id) {
+		$sql = "UPDATE `discord_members` SET is_authorized = 1 WHERE discord_id = '$discord_id';";
+		if ($this->db->query($sql) === TRUE) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	function discord_member_authorized_unset($discord_id) {
+		$sql = "UPDATE `discord_members` SET is_authorized = 0 WHERE discord_id = '$discord_id';";
+		if ($this->db->query($sql) === TRUE) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	function discord_member_delete($discord_id) {
+		$sql = "DELETE FROM `discord_members` WHERE discord_id = '$discord_id';";
 		if ($this->db->query($sql) === TRUE) {
 			return null;
 		} else {

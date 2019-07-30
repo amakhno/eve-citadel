@@ -6,15 +6,21 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/../vendor/autoload.php';
 use RestCord\DiscordClient;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 require_once(__DIR__ . '/../lib/other.php');
 
 class DiscordCitadelClient {
 
 	function __construct() {
+		$this->logger = new Logger('discord');
+		$this->logger->pushHandler(new StreamHandler(__DIR__ . '/../logs/discord.log', Logger::WARNING));
+
 		$this->config = require __DIR__ . '/../config/discord.php';
 		$this->client = new DiscordClient([
-			'token' => $this->config['token']
+			'token' => $this->config['token'],
+			'logger' => $this->logger
 		]);
 		$this->roles = $this->client->guild->getGuildRoles([
 			'guild.id' => (int)$this->config['guild_id']
@@ -58,6 +64,14 @@ class DiscordCitadelClient {
 		return false;
 	}
 
+	function user_exist($id) {
+		
+		if ($this->user_get($id) != null) {
+			return true;
+		}
+		return false;
+	}
+
 	function get_role($role_name) {
 		foreach ($this->roles as $role) {
 			if ($role->name == $role_name) {
@@ -93,6 +107,11 @@ class DiscordCitadelClient {
 				}
 			}
 		}
+	}
+
+	function sanitize_name($nick) {
+		$nick = substr($nick, 0, 32);
+		return $nick;
 	}
 
 	public function guild_get() {
@@ -141,14 +160,30 @@ class DiscordCitadelClient {
 	}
 
 	public function user_add($discord_id, $token, $nick = null, $roles = null) {
-		$response = $this->client->guild->addGuildMember([
-			'guild.id' => (int)$this->config['guild_id'],
-			'user.id' => (int)$discord_id,
-			'access_token' => (string)$token,
-			'nick' => (string)$nick,
-			'roles' => $roles
-		]);
-		return $response;
+		try {
+			$response = $this->client->guild->addGuildMember([
+				'guild.id' => (int)$this->config['guild_id'],
+				'user.id' => (int)$discord_id,
+				'access_token' => (string)$token,
+				'nick' => (string)$this->sanitize_name($nick),
+				'roles' => $roles
+			]);
+			return $response;
+		} catch(Exception $e) {
+			$this->logger->error($e);
+		}
+	}
+
+	public function user_get($discord_id) {
+		try {
+			$response = $this->client->guild->getGuildMember([
+				'guild.id' => (int)$this->config['guild_id'],
+				'user.id' => (int)$discord_id
+			]);
+			return $response;
+		} catch(Exception $e) {
+			$this->logger->error($e);
+		}
 	}
 
 	public function user_del($discord_id) {

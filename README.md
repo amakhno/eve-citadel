@@ -1,8 +1,9 @@
-## Based on EVE Online SSO, centralized authentication system for services like Discord, TeamSpeak3 and forum-engine phpBB3.
-<br>
+# EVE Citadel
+[REAMDE EN Version](README_EN.md)<br>
+[REAMDE RU Version](README_RU.md)<br>
+[TODO](TODO.md)<br>
 
-## Централизованный портал авторизации для Discord, TeamSpeak3 и форумного движка phpBB3, использующая EVE Online SSO.
-<br>
+If you use it with discord, than use it with [BroadswordBot citadel version](https://github.com/hiveliberty/Broadsword/tree/citadel)
 
-<br>
-Read wiki for more info.
+### Contacts
+Discord Community: https://discord.gg/ZDf8yBW

@@ -6,6 +6,9 @@ return [
 		'portal_url' => "http://example.com",
 		'forum_url' => "http://example.com/forum",
 		'killboard_url' => "http://example.com",
+		'recruitment_url' => "http://example.com",
+		'meta_description' => "",
+		'meta_keywords' => "",
 	],
 	'services' => [
 		'discord_enabled' => true,
@@ -15,7 +18,6 @@ return [
 	'sso' => [
 		'clientID' => '',
 		'secretKey' => '',
-		'callbackURL' => 'http://example.com/callback-sso',
 	],
 	'phpbb3' => [
 		'path' => '',
