@@ -30,3 +30,5 @@ composer.json.old
 routes.php.old
 README_RU.md
 phpunit.xml
+config_real
+mysql

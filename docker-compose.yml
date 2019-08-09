@@ -1,18 +1,39 @@
-version: '2'
-
-volumes:
-    logs:
-        driver: local
+version: '3'
 
 services:
-    slim:
-        image: php:7-alpine
-        working_dir: /var/www
-        command: php -S 0.0.0.0:8080 -t public public/index.php
-        environment:
-            docker: "true"
+    citadel:
+        container_name: citadel-site
+        image: citadel
+        depends_on: 
+            - mysql
         ports:
             - 8080:8080
+            - 9000:9000
+        build: 
+            context: .
+            args: 
+            - WITH_XDEBUG=true
+        networks: 
+            - citadel-network
+        environment:
+            - MYSQL_ROOT_PASSWORD=testPassword
+            - XDEBUG_CONFIG="remote_host=192.168.5.51 remote_port=9000"
         volumes:
-            - .:/var/www
-            - logs:/var/www/logs
+            - ./config_real:/var/www/config
+            - ./logs:/var/www/logs
+
+    mysql:        
+        container_name: citadel-database
+        image: mysql:latest
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            - MYSQL_ROOT_PASSWORD=testPassword
+        networks: 
+            - citadel-network
+        volumes:
+            - ./mysql:/var/lib/mysql
+        ports: 
+            - 3306:3306
+
+networks:
+  citadel-network:
